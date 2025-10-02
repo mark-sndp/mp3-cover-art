@@ -10,8 +10,9 @@ const Logger = require('./logger');
  * Applies cover art to MP3 files in a folder using FFmpeg
  */
 class Mp3CoverArtApp {
-  constructor() {
-    this.logger = new Logger();
+  constructor(logLevel = 'info') {
+    // Available log levels: 'debug', 'info', 'warn', 'error'
+    this.logger = new Logger(logLevel);
   }
 
   /**
@@ -20,6 +21,15 @@ class Mp3CoverArtApp {
    */
   parseArguments() {
     const args = process.argv.slice(2);
+    
+    // Parse log level option
+    let logLevel = 'info';
+    const logLevelIndex = args.indexOf('--log-level');
+    if (logLevelIndex !== -1 && args[logLevelIndex + 1]) {
+      logLevel = args[logLevelIndex + 1];
+      // Remove log level arguments
+      args.splice(logLevelIndex, 2);
+    }
     
     if (args.length < 2) {
       this.showUsage();
@@ -33,7 +43,8 @@ class Mp3CoverArtApp {
     return {
       inputFolder,
       coverArtPath,
-      outputFolder
+      outputFolder,
+      logLevel
     };
   }
 
@@ -42,16 +53,21 @@ class Mp3CoverArtApp {
    */
   showUsage() {
     console.log(`
-Usage: node src/main.js <input-folder> <cover-art-image> [output-folder]
+Usage: node src/main.js <input-folder> <cover-art-image> [output-folder] [--log-level <level>]
 
 Arguments:
   input-folder    Path to folder containing MP3 files
   cover-art-image Path to image file to use as cover art
   output-folder   Path to output folder (optional, defaults to ../output)
 
+Options:
+  --log-level     Log level: debug, info, warn, error (default: info)
+
 Examples:
   node src/main.js ./input ./cover.jpg
   node src/main.js ./music ./artwork.png ./processed
+  node src/main.js ./input ./cover.jpg --log-level debug
+  node src/main.js ./input ./cover.jpg ./output --log-level warn
     `);
   }
 
@@ -92,10 +108,15 @@ Examples:
    */
   async run() {
     try {
-      this.logger.info('MP3 Cover Art Application Started');
-      
-      // Parse and validate arguments
+      // Parse and validate arguments first to get log level
       const args = this.parseArguments();
+      
+      // Update logger with specified log level
+      this.logger = new Logger(args.logLevel);
+      
+      this.logger.info('MP3 Cover Art Application Started');
+      this.logger.debug(`Log level set to: ${args.logLevel}`);
+      
       await this.validateArguments(args);
 
       // Validate FFmpeg installation

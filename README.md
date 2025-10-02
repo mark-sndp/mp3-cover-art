@@ -61,7 +61,7 @@ ffmpeg -version
 ### Basic Syntax
 
 ```bash
-node src/main.js <input-folder> <cover-art-image> [output-folder]
+node src/main.js <input-folder> <cover-art-image> [output-folder] [--log-level <level>]
 ```
 
 ### Parameters
@@ -69,6 +69,10 @@ node src/main.js <input-folder> <cover-art-image> [output-folder]
 - `input-folder`: Path to the folder containing MP3 files
 - `cover-art-image`: Path to the image file to use as cover art
 - `output-folder`: *(Optional)* Path to the output folder. Defaults to `../output` relative to input folder
+
+### Options
+
+- `--log-level`: *(Optional)* Set logging verbosity. Available levels: `debug`, `info`, `warn`, `error` (default: `info`)
 
 ### Examples
 
@@ -79,6 +83,12 @@ node src/main.js ./music ./cover.jpg
 
 # Specify custom output folder
 node src/main.js ./music ./artwork.png ./processed-music
+
+# With debug logging (verbose output)
+node src/main.js ./music ./cover.jpg --log-level debug
+
+# With quiet logging (warnings and errors only)
+node src/main.js ./music ./cover.jpg --log-level warn
 ```
 
 #### Real-world Examples
@@ -86,18 +96,27 @@ node src/main.js ./music ./artwork.png ./processed-music
 # Process an album folder
 node src/main.js "C:/Music/My Album" "C:/Images/album-cover.jpg"
 
-# Process with absolute paths
-node src/main.js "/home/user/music" "/home/user/images/cover.png" "/home/user/output"
+# Process with absolute paths and debug logging
+node src/main.js "/home/user/music" "/home/user/images/cover.png" "/home/user/output" --log-level debug
+
+# Quiet processing with custom output
+node src/main.js ./input ./cover.jpg ./output --log-level warn
 ```
 
 ### NPM Scripts
 
 ```bash
-# Run the application
+# Run the application (info log level)
 npm start <input-folder> <cover-art-image> [output-folder]
 
 # Development mode (same as start)
 npm run dev <input-folder> <cover-art-image> [output-folder]
+
+# Debug mode (verbose logging)
+npm run debug <input-folder> <cover-art-image> [output-folder]
+
+# Quiet mode (warnings and errors only)
+npm run quiet <input-folder> <cover-art-image> [output-folder]
 ```
 
 ## Supported Formats
@@ -130,6 +149,32 @@ The application provides detailed logging in two formats:
 
 1. **Console Output**: Real-time colored output showing progress
 2. **Log Files**: Detailed logs saved to `logs/mp3-cover-art-YYYY-MM-DD.log`
+
+#### Log Levels
+
+You can control the verbosity of output using the `--log-level` option:
+
+| Level | Description | What You See |
+|-------|-------------|--------------|
+| `debug` | Most verbose | All messages + FFmpeg command details + progress output |
+| `info` | Default level | Application status + file processing + summary |
+| `warn` | Warnings only | Warnings + errors (quiet operation) |
+| `error` | Errors only | Only error messages (silent unless problems occur) |
+
+#### Examples
+```bash
+# Debug mode - see everything including FFmpeg details
+node src/main.js ./input ./cover.jpg --log-level debug
+
+# Normal mode - balanced output (default)
+node src/main.js ./input ./cover.jpg --log-level info
+
+# Quiet mode - minimal output
+node src/main.js ./input ./cover.jpg --log-level warn
+
+# Silent mode - errors only
+node src/main.js ./input ./cover.jpg --log-level error
+```
 
 #### Log Levels
 - **INFO**: General information and progress
@@ -188,11 +233,21 @@ The application handles various error scenarios:
 
 ### Debug Mode
 
-For detailed debugging information, modify the Logger initialization in `src/main.js`:
+For detailed debugging information, use the debug log level:
 
-```javascript
-this.logger = new Logger('debug'); // Change from 'info' to 'debug'
+```bash
+# Command line option (recommended)
+node src/main.js ./input ./cover.jpg --log-level debug
+
+# Or use the npm script
+npm run debug ./input ./cover.jpg
 ```
+
+This will show:
+- Complete FFmpeg commands being executed
+- FFmpeg progress and output details
+- Detailed file processing information
+- All application status messages
 
 ## License
 
