@@ -1,0 +1,30 @@
+{
+  "name": "mp3-cover-art",
+  "version": "1.0.0",
+  "description": "A Node.js application to apply cover art to MP3 files using FFmpeg",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "node src/main.js",
+    "dev": "node src/main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "mp3",
+    "cover-art",
+    "audio",
+    "ffmpeg",
+    "metadata"
+  ],
+  "author": "Mark Sandeep",
+  "license": "MIT",
+  "dependencies": {
+    "fs-extra": "^11.1.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mark-sndp/mp3-cover-art.git"
+  }
+}
